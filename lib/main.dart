@@ -9,7 +9,14 @@ import 'providers.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (hasSupabase) {
-    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseKey);
+    try {
+      await Supabase.initialize(
+        url: supabaseUrl,
+        publishableKey: supabaseKey,
+      );
+    } catch (e) {
+      debugPrint('Supabase init offline fallback: $e');
+    }
   }
   final db = AppDb();
   runApp(
