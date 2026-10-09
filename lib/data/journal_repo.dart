@@ -21,8 +21,11 @@ class JournalRepo {
     return id;
   }
 
-  Future<void> deleteJournal(String id) =>
-      (db.delete(db.journals)..where((t) => t.id.equals(id))).go();
+  Future<void> deleteJournal(String id) async {
+    await (db.delete(db.properties)..where((t) => t.journalId.equals(id))).go();
+    await (db.delete(db.entryRows)..where((t) => t.journalId.equals(id))).go();
+    await (db.delete(db.journals)..where((t) => t.id.equals(id))).go();
+  }
 
   Stream<List<Property>> watchProps(String journalId) =>
       (db.select(db.properties)
