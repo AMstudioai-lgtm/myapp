@@ -19,11 +19,11 @@
 
 ## Module en cours
 - M0 : repo + codespace — termine.
-- M1 : shell VS Code (top bar, burger, navigation) — a faire.
-- M2 : CRUD journal + arborescence + suppression — a faire.
-- M3 : table dynamique + proprietes — a faire.
-- M4 : footer somme/moyenne — a faire.
-- M5 : auth + parametres — a faire.
+- M1 : shell VS Code (top bar, burger, navigation) — termine.
+- M2 : CRUD journal + arborescence + suppression — termine.
+- M3 : table dynamique + proprietes user — termine.
+- M4 : footer somme/moyenne — termine.
+- M5 : auth + parametres — termine.
 
 ## Backlog / V2
 - Sync cloud Supabase DB, formules custom, stats trading, recherche, onglets, export CSV, multi-tableaux.
