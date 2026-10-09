@@ -5,17 +5,15 @@ if [ ! -d "$HOME/flutter" ]; then
   git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter
 fi
 export PATH="$PATH:$HOME/flutter/bin"
-flutter --disable-analytics || true
-flutter precache --android || true
-flutter config --enable-web || true
-yes | flutter doctor --android-licenses || true
-flutter doctor -v || true
+echo 'export PATH="$PATH:$HOME/flutter/bin"' >> "$HOME/.bashrc"
+flutter --disable-analytics
+flutter precache --android
+flutter config --enable-web
+yes | flutter doctor --android-licenses
+flutter doctor -v
 if [ -f pubspec.yaml ]; then
-  flutter pub get || true
-  if [ ! -d android ]; then
-    flutter create --platforms=android,web --project-name myapp . || true
-    flutter pub get || true
-  fi
-  dart run build_runner build --delete-conflicting-outputs || true
+  flutter pub get
+  # android/ web/ crees a la main si besoin: flutter create --platforms=android,web .
+  dart run build_runner build --delete-conflicting-outputs
 fi
 echo "Codespace pret. Lance: flutter run -d chrome / flutter run"

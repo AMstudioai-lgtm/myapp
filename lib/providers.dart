@@ -6,3 +6,7 @@ final dbProvider = Provider<AppDb>((_) => throw UnimplementedError('override in 
 final repoProvider = Provider<JournalRepo>((ref) => JournalRepo(ref.watch(dbProvider)));
 final journalsProvider = StreamProvider((ref) => ref.watch(repoProvider).watchJournals());
 final selectedJournalProvider = StateProvider<String?>((_) => null);
+final propsProvider =
+    StreamProvider.family<List<Property>, String>((ref, journalId) => ref.watch(repoProvider).watchProps(journalId));
+final rowsProvider =
+    StreamProvider.family<List<EntryRow>, String>((ref, journalId) => ref.watch(repoProvider).watchRows(journalId));

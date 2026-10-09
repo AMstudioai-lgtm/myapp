@@ -31,11 +31,16 @@ class JournalRepo {
           .watch();
 
   Future<void> addProperty(String journalId, String name, String kind, {List<String> options = const []}) async {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) throw ArgumentError('Nom propriete requis');
+    const validKinds = {'text', 'number', 'date', 'select'};
+    if (!validKinds.contains(kind)) throw ArgumentError('Kind invalide: $kind');
+    if (kind == 'select' && options.isEmpty) throw ArgumentError('Options requises pour select');
     final existing = await (db.select(db.properties)..where((t) => t.journalId.equals(journalId))).get();
     await db.into(db.properties).insert(PropertiesCompanion(
       id: Value(_uuid.v4()),
       journalId: Value(journalId),
-      name: Value(name.trim()),
+      name: Value(trimmed),
       kind: Value(kind),
       optionsJson: Value(jsonEncode(options)),
       sortOrder: Value(existing.length),

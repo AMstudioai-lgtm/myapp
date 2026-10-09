@@ -47,13 +47,8 @@ class _TableView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repo = ref.watch(repoProvider);
-    final props = ref.watch(StreamProvider.autoDispose(
-      (r) => r.watch(repoProvider).watchProps(journalId),
-    ));
-    final rows = ref.watch(StreamProvider.autoDispose(
-      (r) => r.watch(repoProvider).watchRows(journalId),
-    ));
+    final props = ref.watch(propsProvider(journalId));
+    final rows = ref.watch(rowsProvider(journalId));
     return Column(
       children: [
         ListTile(title: Text(journalName, style: Theme.of(context).textTheme.titleLarge)),
@@ -66,7 +61,7 @@ class _TableView extends ConsumerWidget {
               return rows.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Center(child: Text('Erreur: $e')),
-                data: (lines) => _grid(context, ref, repo, cols, lines),
+                data: (lines) => _grid(context, ref, cols, lines),
               );
             },
           ),
@@ -89,7 +84,7 @@ class _TableView extends ConsumerWidget {
     );
   }
 
-  Widget _grid(BuildContext context, WidgetRef ref, JournalRepo repo, List cols, List lines) {
+  Widget _grid(BuildContext context, WidgetRef ref, List<Property> cols, List<EntryRow> lines) {
     final sums = _sums(cols, lines);
     return Column(children: [
       Expanded(
@@ -104,10 +99,10 @@ class _TableView extends ConsumerWidget {
               for (final r in lines)
                 DataRow(cells: [
                   for (final c in cols)
-                    DataCell(_cell(context, ref, repo, r, c)),
+                    DataCell(_cell(context, ref, r, c)),
                   DataCell(IconButton(
                     icon: const Icon(Icons.delete_outline, size: 18),
-                    onPressed: () => repo.deleteRow(r.id as String),
+                    onPressed: () => ref.read(repoProvider).deleteRow(r.id),
                   )),
                 ]),
               // Ligne footer calcul
@@ -133,7 +128,7 @@ class _TableView extends ConsumerWidget {
           ),
           const SizedBox(width: 8),
           FilledButton.icon(
-            onPressed: () => repo.addRow(journalId, {}),
+            onPressed: () => ref.read(repoProvider).addRow(journalId, {}),
             icon: const Icon(Icons.add),
             label: const Text('Ligne'),
           ),
@@ -142,13 +137,13 @@ class _TableView extends ConsumerWidget {
     ]);
   }
 
-  Map<String, num> _sums(List cols, List lines) {
+  Map<String, num> _sums(List<Property> cols, List<EntryRow> lines) {
     final out = <String, num>{};
     for (final c in cols) {
       if (c.kind != 'number') continue;
       num sum = 0, n = 0;
       for (final r in lines) {
-        final map = decodeValues(r.valuesJson as String);
+        final map = decodeValues(r.valuesJson);
         final v = num.tryParse('${map[c.id] ?? ''}');
         if (v != null) {
           sum += v;
@@ -161,17 +156,17 @@ class _TableView extends ConsumerWidget {
     return out;
   }
 
-  Widget _cell(BuildContext context, WidgetRef ref, JournalRepo repo, dynamic row, dynamic col) {
-    final map = decodeValues(row.valuesJson as String);
+  Widget _cell(BuildContext context, WidgetRef ref, EntryRow row, Property col) {
+    final map = decodeValues(row.valuesJson);
     final v = map[col.id];
-    final kind = col.kind as String;
+    final kind = col.kind;
     if (kind == 'select') {
-      final opts = List<String>.from(jsonDecode(col.optionsJson as String) as List);
+      final opts = List<String>.from(jsonDecode(col.optionsJson) as List);
       return DropdownButton<String>(
         value: v is String && opts.contains(v) ? v : null,
         hint: const Text('—'),
         items: [for (final o in opts) DropdownMenuItem(value: o, child: Text(o))],
-        onChanged: (nv) => repo.updateCell(row.id as String, col.id as String, nv),
+        onChanged: (nv) => ref.read(repoProvider).updateCell(row.id, col.id, nv),
       );
     }
     if (kind == 'date') {
@@ -185,7 +180,7 @@ class _TableView extends ConsumerWidget {
             initialDate: DateTime.now(),
           );
           if (d != null) {
-            await repo.updateCell(row.id as String, col.id as String, DateFormat('yyyy-MM-dd').format(d));
+            await ref.read(repoProvider).updateCell(row.id, col.id, DateFormat('yyyy-MM-dd').format(d));
           }
         },
       );
@@ -196,7 +191,7 @@ class _TableView extends ConsumerWidget {
         initialValue: '${v ?? ''}',
         keyboardType: kind == 'number' ? TextInputType.number : TextInputType.text,
         decoration: const InputDecoration(isDense: true),
-        onFieldSubmitted: (nv) => repo.updateCell(row.id as String, col.id as String, nv),
+        onFieldSubmitted: (nv) => ref.read(repoProvider).updateCell(row.id, col.id, nv),
       ),
     );
   }

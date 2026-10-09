@@ -3,28 +3,28 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config.dart';
 
 /// Bouton login/sign compact pour la top bar + gate email/mdp avec cache offline.
-class AuthButton extends StatefulWidget {
+class AuthButton extends StatelessWidget {
   const AuthButton({super.key, this.compact = false});
   final bool compact;
 
   @override
-  State<AuthButton> createState() => _AuthButtonState();
-}
-
-class _AuthButtonState extends State<AuthButton> {
-  @override
   Widget build(BuildContext context) {
     if (!hasSupabase) return const Chip(label: Text('Local'));
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) {
-      return TextButton(
-        child: Text(widget.compact ? 'Login' : 'Login / Sign up'),
-        onPressed: () => showDialog(context: context, builder: (_) => const _AuthDialog()),
-      );
-    }
-    return TextButton(
-      child: Text(user.email ?? 'Compte'),
-      onPressed: () => Supabase.instance.client.auth.signOut().then((_) => setState(() {})),
+    return StreamBuilder(
+      stream: Supabase.instance.client.auth.onAuthStateChange,
+      builder: (_, snap) {
+        final user = snap.data?.session?.user;
+        if (user == null) {
+          return TextButton(
+            child: Text(compact ? 'Login' : 'Login / Sign up'),
+            onPressed: () => showDialog(context: context, builder: (_) => const _AuthDialog()),
+          );
+        }
+        return TextButton(
+          child: Text(user.email ?? 'Compte'),
+          onPressed: () => Supabase.instance.client.auth.signOut(),
+        );
+      },
     );
   }
 }

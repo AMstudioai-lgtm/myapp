@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'theme.dart';
 
 ThemeData buildTheme() {
   const bg = Color(0xFF1E1E1E);

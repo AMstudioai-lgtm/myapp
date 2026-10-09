@@ -19,14 +19,19 @@ class _ShellState extends ConsumerState<Shell> {
 
   @override
   Widget build(BuildContext context) {
-    final journals = ref.watch(journalsProvider);
+    final journalsAsync = ref.watch(journalsProvider);
     final selected = ref.watch(selectedJournalProvider);
+    final selectedName = journalsAsync.when(
+      data: (list) => list.firstWhere((j) => j.id == selected, orElse: () => list.firstOrNull)?.name,
+      loading: () => null,
+      error: (_, _) => null,
+    );
     return Scaffold(
       appBar: AppBar(
         leading: Builder(
           builder: (c) => IconButton(icon: const Icon(Icons.menu), onPressed: () => Scaffold.of(c).openDrawer()),
         ),
-        title: Text(index == 0 ? 'Journal${selected != null ? ' — $selected' : ''}' : 'Parametres'),
+        title: Text(index == 0 ? 'Journal${selectedName != null ? ' — $selectedName' : ''}' : 'Parametres'),
         actions: [
           AuthButton(compact: true),
         ],
@@ -51,7 +56,7 @@ class _ShellState extends ConsumerState<Shell> {
                 ),
               ]),
               children: [
-                ...?journals.valueOrNull?.map((j) => ListTile(
+                ...?journalsAsync.valueOrNull?.map((j) => ListTile(
                       dense: true,
                       selected: selected == j.id,
                       title: Text(j.name),
