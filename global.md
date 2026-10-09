@@ -18,12 +18,18 @@
 - Avantages : Drift type, offline natif. Supabase simple. Inconvenients : Drift verbeux, Supabase Google Sign-In moins natif que Firebase.
 
 ## Module en cours
-- M0 : repo + codespace — termine.
-- M1 : shell VS Code (top bar, burger, navigation) — termine.
-- M2 : CRUD journal + arborescence + suppression — termine.
-- M3 : table dynamique + proprietes user — termine.
-- M4 : footer somme/moyenne — termine.
-- M5 : auth + parametres — termine.
+- M0 : repo + codespace 4-core SSH — termine.
+- M1 : shell VS Code sombre (top bar, burger, navigation) — termine et teste.
+- M2 : CRUD journal + arborescence + suppression cascade — termine et teste (Drift in-memory).
+- M3 : table dynamique + proprietes user (texte, nombre, date, selection) — termine et teste.
+- M4 : footer somme/moyenne dynamique — termine et teste.
+- M5 : auth Supabase + parametres (offline fallback, cache) — termine.
+- M6 (En cours) : Synchronisation des tables cloud `public.trades` et `public.profiles` avec la base Drift locale.
+
+## Etat de sante & Qualite
+- `flutter analyze` : 0 erreur, 0 warning (clean).
+- `flutter test` : 8/8 tests unitaires reussis (Drift in-memory + calculs stats trading).
+- MCP Supabase : Connecte au projet `Tradingworkspace` (`hvxslvdqnwaafvdanasf`).
 
 ## Backlog / V2
 - Sync cloud Supabase DB, formules custom, stats trading, recherche, onglets, export CSV, multi-tableaux.
