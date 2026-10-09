@@ -1,0 +1,30 @@
+{
+  "name": "myapp - Flutter Trading Journal",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "installMaven": false,
+      "installGradle": false
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Dart-Code.dart-code",
+        "Dart-Code.flutter"
+      ],
+      "settings": {
+        "dart.flutterSdkPath": "/home/vscode/flutter",
+        "dart.checkForSdkUpdates": false
+      }
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "portsAttributes": {
+    "8080": { "label": "Flutter web", "onAutoForward": "notify" }
+  }
+}

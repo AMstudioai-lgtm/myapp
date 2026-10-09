@@ -1,0 +1,7 @@
+.dart_tool/
+.build/
+build/
+.android/
+.idea/
+.vscode/*
+!.vscode/extensions.json
